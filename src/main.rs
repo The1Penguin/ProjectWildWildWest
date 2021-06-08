@@ -67,68 +67,53 @@ fn setup(
     .insert( Person {speed: 50.0});
 }
 
+fn movement<'a>(
+    keyboard_input: Res<'a, Input<KeyCode>>,
+    transform: &mut Transform,
+    init_speed: f32
+) -> Res<'a, Input<KeyCode>> {
+    let mut vel = Vec3::new(0.0,0.0,0.0);
+    let speed;
+    if keyboard_input.pressed(KeyCode::LShift){
+        speed = 2.0 * init_speed;
+    }
+    else{
+        speed = init_speed;
+    }
+
+    if keyboard_input.pressed(KeyCode::W) {
+        vel.y = 1.0;
+    }
+    else if keyboard_input.pressed(KeyCode::S) {
+        vel.y = -1.0;
+    }
+    if keyboard_input.pressed(KeyCode::A) {
+        vel.x = -1.0;
+    }
+    else if keyboard_input.pressed(KeyCode::D) {
+        vel.x = 1.0;
+    }
+
+    let translation = &mut transform.translation;
+    translation.x += vel.x * speed * TIME_STEP;
+    translation.y += vel.y * speed * TIME_STEP;
+    keyboard_input
+
+}
 fn movement_person(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&mut Person, &mut Transform)>,
 ) {
     if let Ok((mut _person, mut transform)) = query.single_mut() {
-        let mut vel = Vec3::new(0.0,0.0,0.0);
-        let speed;
-        if keyboard_input.pressed(KeyCode::LShift){
-            speed = 100.0;
-        }
-        else{
-            speed = 50.0;
-        }
-
-        if keyboard_input.pressed(KeyCode::W) {
-            vel.y = 1.0;
-        }
-        else if keyboard_input.pressed(KeyCode::S) {
-            vel.y = -1.0;
-        }
-        if keyboard_input.pressed(KeyCode::A) {
-            vel.x = -1.0;
-        }
-        else if keyboard_input.pressed(KeyCode::D) {
-            vel.x = 1.0;
-        }
-
-        let translation = &mut transform.translation;
-        translation.x += vel.x * speed * TIME_STEP;
-        translation.y += vel.y * speed * TIME_STEP;
+        movement(keyboard_input, &mut transform, 50.0);
     }
 }
 
 fn move_camera(
-    keyboard_input: Res<Input<KeyCode>>,
+    mut keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&mut Transform, &mut Position)>,
 ) {
     for (mut transform, mut _position) in query.iter_mut() {
-        let mut vel = Vec3::new(0.0,0.0,0.0);
-        let speed;
-        if keyboard_input.pressed(KeyCode::LShift){
-            speed = 100.0;
-        }
-        else{
-            speed = 50.0;
-        }
-
-        if keyboard_input.pressed(KeyCode::W) {
-            vel.y = 1.0;
-        }
-        else if keyboard_input.pressed(KeyCode::S) {
-            vel.y = -1.0;
-        }
-        if keyboard_input.pressed(KeyCode::A) {
-            vel.x = -1.0;
-        }
-        else if keyboard_input.pressed(KeyCode::D) {
-            vel.x = 1.0;
-        }
-
-        let translation = &mut transform.translation;
-        translation.x += vel.x * speed * TIME_STEP;
-        translation.y += vel.y * speed * TIME_STEP;
+        keyboard_input = movement(keyboard_input, &mut transform, 50.0);
     }
 }
