@@ -7,9 +7,18 @@ use bevy::{
 const TIME_STEP: f32 = 1.0 / 60.0;
 pub struct Position(Transform);
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum AppState{
+    Load,
+    Overworld,
+    Combat,
+    Chat,
+    Menu,
+}
+
 fn main() {
     let window = WindowDescriptor {
-        title: "Forrest".to_string(),
+        title: "Wild Wild Wes".to_string(),
         width: 1920.0,
         height: 1080.0,
         vsync: true,
@@ -19,11 +28,15 @@ fn main() {
 
     App::build()
         .add_plugins(DefaultPlugins)
-        .add_startup_system(setup.system())
+        .add_state(AppState::Overworld)
         .add_system(bevy::input::system::exit_on_esc_system.system())
         .insert_resource(window)
         .add_system_set(
-            SystemSet::new()
+            SystemSet::on_enter(AppState::Overworld)
+                .with_system(setup.system())
+                )
+        .add_system_set(
+            SystemSet::on_update(AppState::Overworld)
                 .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
                 .with_system(movement_person.system())
                 .with_system(move_camera.system()),
@@ -33,11 +46,7 @@ fn main() {
 
 struct Person{
     speed: f32,
-}
-
-struct World{
-    x: f32,
-    y: f32,
+    mc: bool,
 }
 
 fn setup(
@@ -56,15 +65,14 @@ fn setup(
     commands.spawn().insert_bundle(SpriteBundle {
         material: asset_handler.clone(),
         ..Default::default()
-    })
-    .insert( World {x: 50.0, y: 50.0});
+    });
     let sprite_handler = materials.add(asset_server.load("wes.png").into());
     commands.spawn().insert_bundle(SpriteBundle {
         material: sprite_handler.clone(),
         sprite: Sprite::new(Vec2::new(80.0, 134.0)),
         ..Default::default()
     })
-    .insert( Person {speed: 50.0});
+    .insert( Person {speed: 50.0, mc: true});
 }
 
 fn movement<'a>(
