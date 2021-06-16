@@ -1,14 +1,17 @@
 use bevy::prelude::*;
 use overworld::OverworldPlugin;
+use menu::MenuPlugin;
 
 mod overworld;
+mod menu;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_plugin(OverworldPlugin)
-            .add_state(AppState::Overworld);
+            .add_state(AppState::Menu)
+            .add_plugin(MenuPlugin);
     }
 }
 
