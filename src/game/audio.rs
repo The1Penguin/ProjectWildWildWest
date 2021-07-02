@@ -17,7 +17,6 @@ pub fn music_setup(
         MusicTrack::Overworld => music = asset_server.load("First Steps.mp3"),
         _ => return,
     }
-    println!("{:?}", music);
     audio.play(music);
 }
 
