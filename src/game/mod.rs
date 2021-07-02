@@ -4,6 +4,7 @@ use menu::MenuPlugin;
 
 mod overworld;
 mod menu;
+mod audio;
 
 pub struct GamePlugin;
 
@@ -11,6 +12,7 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_plugin(OverworldPlugin)
             .add_state(AppState::Menu)
+            .add_state(MusicTrack::Overworld)
             .add_plugin(MenuPlugin);
     }
 }
@@ -26,6 +28,12 @@ pub enum AppState{
     Combat,
     Chat,
     Menu,
+}
+
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum MusicTrack{
+    Overworld,
 }
 
 // Struct to indicate different characters

@@ -4,7 +4,8 @@ use bevy::{
     render::pass::ClearColor,
     sprite::collide_aabb::{collide, Collision},
 };
-use crate::game::{AppState,TIME_STEP,Person,Position};
+use crate::game::{AppState,MusicTrack, TIME_STEP,Person,Position};
+use crate::game::audio::music_setup;
 
 pub struct OverworldPlugin;
 
@@ -27,6 +28,10 @@ fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    audio: Res<Audio>, 
+    mut state: ResMut<State<AppState>>,
+    mut track: ResMut<State<MusicTrack>>,
+
 ) {
     // Spawns in the camera
     commands
@@ -49,6 +54,9 @@ fn setup(
         ..Default::default()
     })
     .insert( Person {speed: 50.0, mc: true});
+    track.set(MusicTrack::Overworld);
+    
+    music_setup(asset_server, audio, track);
 }
 
 fn movement<'a>(
